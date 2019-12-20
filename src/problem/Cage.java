@@ -10,11 +10,11 @@ public class Cage {
     public Cage(int size, int number, int[][] neighborhoods) {
         this.size = size;
         this.number = number;
-        this.neighbors = this.setNeighbors(neighborhoods);
+        this.setNeighbors(neighborhoods);
     }
 
     //Gets an n*2 array that shows which cages are neighbors and returns neighbors of this cage
-    private ArrayList<Integer> setNeighbors(int[][] neighborhoods) {
+    private void setNeighbors(int[][] neighborhoods) {
         ArrayList<Integer> neighbors = new ArrayList<Integer>();
 
         for (int i = 0; i < neighborhoods.length; i++) {
@@ -31,6 +31,11 @@ public class Cage {
             }
         }
 
-        return neighbors;
+        this.neighbors = neighbors;
     }
+
+    public ArrayList<Integer> getNeighbors() { return this.neighbors; }
+
+    public int getNumber() { return this.number; }
+    public int getSize() { return this.size; }
 }
