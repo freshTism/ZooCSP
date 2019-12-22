@@ -14,14 +14,17 @@ public class CSP {
     private ArrayList<Integer> animals;
 
     //A queue of neighborhood of cages
-    private Queue<int[]> arcs = new LinkedList<int[]>();
+    private Queue<int[]> arcs;
 
     private int[][] binaryConstraint;
+
+    private HashMap<Cage, ArrayList<Integer>> domains;
 
     public CSP(ArrayList<Cage> cages, ArrayList<Integer> animals, int[][] neighborhoodConstraint) {
         this.cages = cages;
         this.animals = animals;
         this.setArcs(cages);
+        this.domains = this.nodeConsistency();
     }
 
     private void setArcs(ArrayList<Cage> cages) {
@@ -53,11 +56,30 @@ public class CSP {
     }
 
     public boolean ac3() {
+        while (!arcs.isEmpty()) {
 
+        }
     }
 
-    private boolean revise(int animal1, int animal2) {
+    private boolean revise(Cage cage1, Cage cage2) {
         boolean revised = false;
+        boolean satisfy = false;
 
+        for (int animal1 : domains.get(cage1)) {
+            //Checks if there is at least one animal in cage2's domain that satisfy the constraint between cage1 & cage2
+            for (int animal2 : domains.get(cage2)) {
+                if (this.binaryConstraint[animal1][animal2] == 1)
+                    satisfy = true;
+            }
+
+            if (!satisfy) {
+                domains.get(cage1).remove(animal1);
+                revised = true;
+             }
+        }
+
+        return revised;
     }
+
+    private int[][] getBinaryConstraint() { return this.binaryConstraint; }
 }
