@@ -14,7 +14,8 @@ public class CSP {
     private ArrayList<Integer> animals;
 
     //A queue of neighborhood of cages
-    private Queue<int[]> arcs;
+//    private Queue<int[]> arcs;
+    private Queue<Cage[]> arcs;
 
     private int[][] binaryConstraint;
 
@@ -23,17 +24,30 @@ public class CSP {
     public CSP(ArrayList<Cage> cages, ArrayList<Integer> animals, int[][] neighborhoodConstraint) {
         this.cages = cages;
         this.animals = animals;
+        this.binaryConstraint = neighborhoodConstraint;
         this.setArcs(cages);
         this.domains = this.nodeConsistency();
     }
 
+//    private void setArcs(ArrayList<Cage> cages) {
+//        Queue<int[]> arcs = new LinkedList<int[]>();
+//
+//        for (Cage cage : cages) {
+//            for (Integer neighbor : cage.getNeighbors()) {
+//                if (!arcs.contains(new int[]{neighbor.intValue(), cage.getNumber()}))
+//                    arcs.add(new int[]{cage.getNumber(), neighbor.intValue()});
+//            }
+//        }
+//        this.arcs = arcs;
+//    }
+
     private void setArcs(ArrayList<Cage> cages) {
-        Queue<int[]> arcs = new LinkedList<int[]>();
+        Queue<Cage[]> arcs = new LinkedList<Cage[]>();
 
         for (Cage cage : cages) {
-            for (Integer neighbor : cage.getNeighbors()) {
-                if (!arcs.contains(new int[]{neighbor.intValue(), cage.getNumber()}))
-                    arcs.add(new int[]{cage.getNumber(), neighbor.intValue()});
+            for (Cage neighbor : cage.getNeighbors()) {
+                if (!arcs.contains(new Cage[]{neighbor, cage}))
+                    arcs.add(new Cage[]{cage, neighbor});
             }
         }
         this.arcs = arcs;
@@ -56,9 +70,25 @@ public class CSP {
     }
 
     public boolean ac3() {
-        while (!arcs.isEmpty()) {
+        Cage[] currentArc = new Cage[2];
+        ArrayList<Cage> tempNeighbors = new ArrayList<Cage>();
 
+        while (!arcs.isEmpty()) {
+            currentArc = this.arcs.poll();
+            if (this.revise(currentArc[0], currentArc[1])) {
+                if (this.domains.get(currentArc[0]).isEmpty())
+                    return false;
+
+                tempNeighbors.addAll(currentArc[0].getNeighbors());
+                tempNeighbors.remove(currentArc[1]);
+                for (Cage cage : tempNeighbors) {
+                    arcs.add(new Cage[]{cage, currentArc[0]});
+                }
+                tempNeighbors.removeAll(tempNeighbors);
+            }
         }
+
+        return true;
     }
 
     private boolean revise(Cage cage1, Cage cage2) {
@@ -81,5 +111,21 @@ public class CSP {
         return revised;
     }
 
-    private int[][] getBinaryConstraint() { return this.binaryConstraint; }
+    //When using this first check if it's null !!!
+    public Cage searchCage(int cageNumber) {
+        Cage target = null;
+
+        for (Cage cage : this.cages) {
+            if (cage.getNumber() == cageNumber) {
+                target = new Cage(cage.getSize(), cage.getNumber());
+                break;
+            }
+        }
+
+        return target;
+    }
+
+    public int[][] getBinaryConstraint() { return this.binaryConstraint; }
+
+    public ArrayList<Cage> getCages() { return cages; }
 }
