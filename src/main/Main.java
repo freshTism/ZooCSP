@@ -3,7 +3,6 @@ package main;
 import problem.CSP;
 import problem.Cage;
 
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
