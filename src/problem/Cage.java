@@ -19,7 +19,7 @@ public class Cage {
     }
 
     //Gets an n*2 array that shows which cages are neighbors and returns neighbors of this cage
-    private void setNeighbors(CSP csp, int[][] neighborhoods) {
+    public void setNeighbors(CSP csp, int[][] neighborhoods) {
         ArrayList<Cage> neighbors = new ArrayList<Cage>();
         int tempCageNumber;
 

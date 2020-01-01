@@ -7,11 +7,13 @@ import java.util.Queue;
 
 public class CSP {
     //Cage as variable in csp
-    private ArrayList<Cage> cages;
+//    private ArrayList<Cage> cages;
+    Cage[] cages;
 
     //Animals as domain in csp
     //Values of this ArrayList are the size of animals
-    private ArrayList<Integer> animals;
+//    private ArrayList<Integer> animals;
+    int[] animals;
 
     //A queue of neighborhood of cages
 //    private Queue<int[]> arcs;
@@ -21,12 +23,10 @@ public class CSP {
 
     private HashMap<Cage, ArrayList<Integer>> domains;
 
-    public CSP(ArrayList<Cage> cages, ArrayList<Integer> animals, int[][] neighborhoodConstraint) {
+    public CSP(Cage[] cages, int[] animals, int[][] neighborhoodConstraint) {
         this.cages = cages;
         this.animals = animals;
         this.binaryConstraint = neighborhoodConstraint;
-        this.setArcs(cages);
-        this.domains = this.nodeConsistency();
     }
 
 //    private void setArcs(ArrayList<Cage> cages) {
@@ -41,7 +41,7 @@ public class CSP {
 //        this.arcs = arcs;
 //    }
 
-    private void setArcs(ArrayList<Cage> cages) {
+    public void setArcs(Cage[] cages) {
         Queue<Cage[]> arcs = new LinkedList<Cage[]>();
 
         for (Cage cage : cages) {
@@ -58,8 +58,8 @@ public class CSP {
         ArrayList<Integer> tempDomain = new ArrayList<Integer>();
 
         for (Cage cage : cages) {
-            for (int i = 0; i < animals.size(); i++) {
-                if (cage.getSize() >= animals.get(i))
+            for (int i = 0; i < animals.length; i++) {
+                if (cage.getSize() >= animals[i])
                     tempDomain.add(i);
             }
             domains.put(cage, tempDomain);
@@ -87,7 +87,6 @@ public class CSP {
                 tempNeighbors.removeAll(tempNeighbors);
             }
         }
-
         return true;
     }
 
@@ -105,7 +104,7 @@ public class CSP {
             if (!satisfy) {
                 domains.get(cage1).remove(animal1);
                 revised = true;
-             }
+            }
         }
 
         return revised;
@@ -127,5 +126,8 @@ public class CSP {
 
     public int[][] getBinaryConstraint() { return this.binaryConstraint; }
 
-    public ArrayList<Cage> getCages() { return cages; }
+    public Cage[] getCages() { return cages; }
+
+    public void setDomains() { this.domains = this.nodeConsistency(); }
+    public HashMap<Cage, ArrayList<Integer>> getDomains() { return this.domains; }
 }

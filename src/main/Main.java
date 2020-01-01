@@ -1,5 +1,8 @@
 package main;
 
+import problem.CSP;
+import problem.Cage;
+
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -19,6 +22,9 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         String input;
         String[] splitedInput;
+
+        Cage[] cages;
+        CSP problem;
 
         //Process first line
         input = scanner.nextLine();
@@ -63,7 +69,24 @@ public class Main {
             }
         }
 
+        //Creating cages and set CSV parameters
+        cages = new Cage[cageCount];
+        for (int i = 0; i < cageCount; i++) {
+            cages[i] = new Cage(cagesSizes[i], i);
+        }
+        problem = new CSP(cages, animalsSizes, neighborhoodConstraint);
+        for (Cage cage : cages) {
+            cage.setNeighbors(problem, neighborhoods);
+        }
+        problem.setArcs(cages);
+        problem.setDomains();   //Set domains and also checks node consistency
 
+        //Checking arc consistency
+        if (problem.getDomains() == null) {
+            System.out.println("This problem has no solution.");
+        } else {
+            System.out.println("Arc consistency: " + problem.ac3());
+        }
 
     }
 }
