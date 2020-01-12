@@ -3,11 +3,27 @@ package main;
 import problem.CSP;
 import problem.Cage;
 
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) {
+
+//        Scanner scanner = new Scanner(System.in);
+//        String tokens = "";
+//
+//        while (scanner.hasNextLine()) {
+//            tokens = scanner.nextLine();
+//            System.out.println(tokens);
+//        }
+//
+//        //String tokens = scanner.nextLine();
+//        System.out.println(tokens);
+//
+//        scanner.close();
 
         int cageNeighborhoodCount;
         int animalCount;
@@ -24,6 +40,9 @@ public class Main {
 
         Cage[] cages;
         CSP problem;
+
+        HashMap<Cage, Integer> assignment = new HashMap<Cage, Integer>();
+        HashMap<Cage, Integer> solution;
 
         //Process first line
         input = scanner.nextLine();
@@ -68,10 +87,13 @@ public class Main {
             }
         }
 
+        scanner.close();
+
         //Creating cages and set CSV parameters
         cages = new Cage[cageCount];
         for (int i = 0; i < cageCount; i++) {
-            cages[i] = new Cage(cagesSizes[i], i);
+            //Number of cages starts from 1
+            cages[i] = new Cage(cagesSizes[i], i + 1);
         }
         problem = new CSP(cages, animalsSizes, neighborhoodConstraint);
         for (Cage cage : cages) {
@@ -87,5 +109,11 @@ public class Main {
             System.out.println("Arc consistency: " + problem.ac3());
         }
 
+        solution = problem.backtrackingSearch(assignment, problem.getDomains());
+
+        if (solution.size() == 0)
+            System.out.println("Failure!");
+        else
+            System.out.println("Found a Solution!");
     }
 }

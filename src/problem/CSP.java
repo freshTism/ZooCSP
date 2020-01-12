@@ -1,9 +1,8 @@
 package problem;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
+import main.Utility;
+
+import java.util.*;
 
 public class CSP {
     //Cage as variable in csp
@@ -22,6 +21,8 @@ public class CSP {
     private int[][] binaryConstraint;
 
     private HashMap<Cage, ArrayList<Integer>> domains;
+    private HashMap<Cage, Integer> assignment;
+    //private Set<Integer> varDomains = new HashSet<Integer>();
 
     public CSP(Cage[] cages, int[] animals, int[][] neighborhoodConstraint) {
         this.cages = cages;
@@ -58,11 +59,17 @@ public class CSP {
         ArrayList<Integer> tempDomain = new ArrayList<Integer>();
 
         for (Cage cage : cages) {
+            //Checks size of the animals and cages
             for (int i = 0; i < animals.length; i++) {
                 if (cage.getSize() >= animals[i])
                     tempDomain.add(i);
             }
-            domains.put(cage, tempDomain);
+
+            if (tempDomain.isEmpty())
+                return null;
+            else
+                domains.put(cage, tempDomain);
+
             tempDomain.removeAll(tempDomain);
         }
 
@@ -116,13 +123,100 @@ public class CSP {
 
         for (Cage cage : this.cages) {
             if (cage.getNumber() == cageNumber) {
-                target = new Cage(cage.getSize(), cage.getNumber());
+                target = (Cage) Utility.deepCopy(cage);
+//                target = new Cage(cage.getSize(), cage.getNumber());
+//                target.setNeighbors(this, neighborhoods);
                 break;
             }
         }
 
         return target;
     }
+
+    public HashMap<Cage, Integer> backtrackingSearch(HashMap<Cage, Integer> assignment, HashMap<Cage, ArrayList<Integer>> varDomains) {
+        if (this.isAssignmentComplete(assignment))
+            return assignment;
+
+        Cage currentCage = mrvHeuristic(assignment, varDomains);
+        Integer[] domainOfCurrentCage = new Integer[this.getDomains().get(currentCage).size()];
+        domainOfCurrentCage = this.getDomains().get(currentCage).toArray(domainOfCurrentCage);
+
+        HashMap<Cage, ArrayList<Integer>> forwardCheckedVarDomains;
+        HashMap<Cage, Integer> result;
+
+        for (Integer animal : domainOfCurrentCage) {
+            assignment.put(currentCage, animal);
+            forwardCheckedVarDomains = forwardChecking(varDomains, currentCage, animal);
+            for (HashMap.Entry<Cage, ArrayList<Integer>> entry : forwardCheckedVarDomains.entrySet()) {
+                if (entry.getValue().isEmpty())
+                    return null;
+            }
+            result = backtrackingSearch(assignment, forwardCheckedVarDomains);
+            if (result != null)
+                return result;
+            assignment.remove(currentCage);
+        }
+
+        return null;
+    }
+
+    private boolean isAssignmentComplete(HashMap<Cage, Integer> assignment) {
+        if (assignment.size() == cages.length)
+            return true;
+        else
+            return false;
+    }
+
+    //Better to check for being null or not before using
+    //Minimum-Remaining values heuristic
+    private Cage mrvHeuristic(HashMap<Cage, Integer> assignment, HashMap<Cage, ArrayList<Integer>> varDomains) {
+        Cage selectedCage = null;
+        int minRemainingValues = Integer.MAX_VALUE;
+
+        for (HashMap.Entry<Cage, ArrayList<Integer>> entry : varDomains.entrySet()) {
+            if (!assignment.containsKey(entry.getKey())) {
+                if (entry.getValue().size() < minRemainingValues)
+                    selectedCage = entry.getKey();
+            }
+        }
+
+        return selectedCage;
+    }
+
+//    private int lcvHeuristic(HashMap<Cage, Integer> assignment, HashMap<Cage, ArrayList<Integer>> varDomains) {
+//
+//    }
+
+    private HashMap<Cage, ArrayList<Integer>> forwardChecking(HashMap<Cage, ArrayList<Integer>> varDomains, Cage cage,
+                                                              int animal) {
+        HashMap<Cage, ArrayList<Integer>> resultVarDomains = (HashMap<Cage, ArrayList<Integer>>) Utility.deepCopy(varDomains);
+
+        for (Cage neighbor : cage.getNeighbors()) {
+            for (Integer neighborAnimal : resultVarDomains.get(neighbor)) {
+                if (this.binaryConstraint[animal][neighborAnimal] == 0) {
+                    resultVarDomains.get(neighbor).remove(resultVarDomains.get(neighbor).indexOf(neighborAnimal));
+                }
+            }
+        }
+
+        return resultVarDomains;
+    }
+
+//    private HashMap<Cage, ArrayList<Integer>> deepCopy(HashMap<Cage, ArrayList<Integer>>) {
+//        HashMap<Cage, >
+//    }
+//public static HashMap<Integer, List<MySpecialClass>> copy(
+//        HashMap<Integer, List<MySpecialClass>> original)
+//{
+//    HashMap<Integer, List<MySpecialClass>> copy = new HashMap<Integer, List<MySpecialClass>>();
+//    for (Map.Entry<Integer, List<MySpecialClass>> entry : original.entrySet())
+//    {
+//        copy.put(entry.getKey(),
+//                // Or whatever List implementation you'd like here.
+//                new ArrayList<MySpecialClass>(entry.getValue()));
+//    }
+//    return copy;
+//}
 
     public int[][] getBinaryConstraint() { return this.binaryConstraint; }
 

@@ -1,8 +1,9 @@
 package problem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Cage {
+public class Cage implements Serializable {
     private int size;
     private int number;
     private ArrayList<Cage> neighbors;
@@ -29,11 +30,14 @@ public class Cage {
                     switch (j) {
                         case 0:
                             tempCageNumber = neighborhoods[i][1];
-                            neighbors.add(csp.searchCage(tempCageNumber));
+                            if (csp.searchCage(tempCageNumber) != null)
+                                neighbors.add(csp.searchCage(tempCageNumber));
                             break;
                         case 1:
                             tempCageNumber = neighborhoods[i][0];
-                            neighbors.add(csp.searchCage(tempCageNumber));
+                            if (csp.searchCage(tempCageNumber) != null)
+                                neighbors.add(csp.searchCage(tempCageNumber));
+                            break;
                     }
                 }
             }
