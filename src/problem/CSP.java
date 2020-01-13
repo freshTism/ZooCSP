@@ -59,9 +59,10 @@ public class CSP {
 
     public HashMap<Cage, ArrayList<Integer>> nodeConsistency() {
         HashMap<Cage, ArrayList<Integer>> domains = new HashMap<Cage, ArrayList<Integer>>();
-        ArrayList<Integer> tempDomain = new ArrayList<Integer>();
 
         for (Cage cage : cages) {
+            ArrayList<Integer> tempDomain = new ArrayList<Integer>();
+
             //Checks size of the animals and cages
             for (int i = 0; i < animals.length; i++) {
                 if (cage.getSize() >= animals[i])
@@ -72,8 +73,6 @@ public class CSP {
                 return null;
             else
                 domains.put(cage, tempDomain);
-
-            tempDomain.removeAll(tempDomain);
         }
 
         return domains;
