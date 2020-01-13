@@ -46,6 +46,14 @@ public class Cage implements Serializable {
         this.neighbors = neighbors;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (((Cage)obj).number == this.number)
+            return true;
+        else
+            return false;
+    }
+
     public ArrayList<Cage> getNeighbors() { return this.neighbors; }
 
     public int getNumber() { return this.number; }

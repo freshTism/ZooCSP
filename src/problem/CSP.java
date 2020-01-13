@@ -30,25 +30,28 @@ public class CSP {
         this.binaryConstraint = neighborhoodConstraint;
     }
 
-//    private void setArcs(ArrayList<Cage> cages) {
-//        Queue<int[]> arcs = new LinkedList<int[]>();
-//
-//        for (Cage cage : cages) {
-//            for (Integer neighbor : cage.getNeighbors()) {
-//                if (!arcs.contains(new int[]{neighbor.intValue(), cage.getNumber()}))
-//                    arcs.add(new int[]{cage.getNumber(), neighbor.intValue()});
-//            }
-//        }
-//        this.arcs = arcs;
-//    }
-
     public void setArcs(Cage[] cages) {
         Queue<Cage[]> arcs = new LinkedList<Cage[]>();
+        boolean arcContains = false;
 
         for (Cage cage : cages) {
             for (Cage neighbor : cage.getNeighbors()) {
-                if (!arcs.contains(new Cage[]{neighbor, cage}))
+                if (arcs.size() == 0)
                     arcs.add(new Cage[]{cage, neighbor});
+                else {
+                    for (Cage[] arc : arcs) {
+                        //If arcs contains {neighbor, cage}
+                        if (arc[0].equals(neighbor) && arc[1].equals(cage)) {
+                            arcContains = true;
+                            break;
+                        }
+                    }
+
+                    if (!arcContains)
+                        arcs.add(new Cage[]{cage, neighbor});
+                }
+
+                arcContains = false;
             }
         }
         this.arcs = arcs;

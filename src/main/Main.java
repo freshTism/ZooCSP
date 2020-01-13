@@ -99,6 +99,12 @@ public class Main {
         for (Cage cage : cages) {
             cage.setNeighbors(problem, neighborhoods);
         }
+        for (Cage cage : cages) {
+            for (Cage subCage : cage.getNeighbors()) {
+                subCage.setNeighbors(problem, neighborhoods);
+            }
+        }
+
         problem.setArcs(cages);
         problem.setDomains();   //Set domains and also checks node consistency
 
@@ -111,7 +117,7 @@ public class Main {
 
         solution = problem.backtrackingSearch(assignment, problem.getDomains());
 
-        if (solution.size() == 0)
+        if (solution == null)
             System.out.println("Failure!");
         else
             System.out.println("Found a Solution!");
