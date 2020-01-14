@@ -57,6 +57,7 @@ public class CSP {
         this.arcs = arcs;
     }
 
+    //Returns null if can not find any value(animal) for a variable(cage)
     public HashMap<Cage, ArrayList<Integer>> nodeConsistency() {
         HashMap<Cage, ArrayList<Integer>> domains = new HashMap<Cage, ArrayList<Integer>>();
 
@@ -139,6 +140,7 @@ public class CSP {
         if (this.isAssignmentComplete(assignment))
             return assignment;
 
+        //Select Minimum-Remaining value in varDomains
         Cage currentCage = mrvHeuristic(assignment, varDomains);
         Integer[] domainOfCurrentCage = new Integer[this.getDomains().get(currentCage).size()];
         domainOfCurrentCage = this.getDomains().get(currentCage).toArray(domainOfCurrentCage);
@@ -177,8 +179,10 @@ public class CSP {
 
         for (HashMap.Entry<Cage, ArrayList<Integer>> entry : varDomains.entrySet()) {
             if (!assignment.containsKey(entry.getKey())) {
-                if (entry.getValue().size() < minRemainingValues)
+                if (entry.getValue().size() < minRemainingValues) {
                     selectedCage = entry.getKey();
+                    minRemainingValues = entry.getValue().size();
+                }
             }
         }
 
